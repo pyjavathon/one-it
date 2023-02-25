@@ -12,6 +12,11 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     username: root
     password: oneit3020  
-
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true #To beautify or pretty print the SQL
   
       
