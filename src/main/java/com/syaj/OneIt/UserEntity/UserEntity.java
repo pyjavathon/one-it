@@ -23,16 +23,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@SequenceGenerator(
-		name = "USER_SEQ_GEN",
-		sequenceName = "user_seq",
-		initialValue = 1,
-		allocationSize = 1)
 public class UserEntity {
 	
 	@Id
 	@GeneratedValue(
-			strategy = GenerationType.SEQUENCE,
+			strategy = GenerationType.IDENTITY,
 			generator = "USER_SEQ_GEN")
 	private Long id;
 	

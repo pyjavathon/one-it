@@ -1,6 +1,5 @@
 package com.syaj.OneIt.UserService.Impl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,8 +39,11 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserVo userSearch(Long id) {
-		Optional<UserEntity> user = userRepo.findById(id);
-		if(!user.isPresent()) throw new NotFoundException("id와 일치하는 회원이 없습니다.");
+		Optional<UserEntity> user = userRepo.findById(id); 
+		
+		if(!user.isPresent())  throw new NotFoundException("id와 일치하는 회원이 없습니다.");
+			
+		
 		UserVo searchResult =  modelMapper.map(user,UserVo.class);
 		return searchResult;
 	}

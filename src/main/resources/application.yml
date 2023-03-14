@@ -8,13 +8,16 @@ server:
 
 spring: 
   datasource:
-    url: jdbc:mariadb://oneit-mariadb.cqrt0t8e1rsq.ap-northeast-2.rds.amazonaws.com:3306/oneit
-    driver-class-name: org.mariadb.jdbc.Driver
+    #jdbc:mariadb://oneit-mariadb.cqrt0t8e1rsq.ap-northeast-2.rds.amazonaws.com:3306/oneit
+    url: jdbc:mysql://localhost:3306/oneit
+    #org.mariadb.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #oneit3020
     username: root
-    password: oneit3020  
+    password: pansunluv!2ayeon
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true #To beautify or pretty print the SQL
