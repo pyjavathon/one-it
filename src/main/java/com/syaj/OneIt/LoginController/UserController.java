@@ -1,4 +1,4 @@
-package com.syaj.OneIt.UserController;
+package com.syaj.OneIt.LoginController;
 
 import java.util.List;
 
@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.syaj.OneIt.UserEntity.UserEntity;
-import com.syaj.OneIt.UserService.UserService;
-import com.syaj.OneIt.UserVo.UserVo;
+import com.syaj.OneIt.LoginEntity.UserEntity;
+import com.syaj.OneIt.LoginService.UserService;
+import com.syaj.OneIt.LoginVo.UserVo;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "user controller")
 @RestController
-@RequestMapping("user")
+@RequestMapping("/user")
 public class UserController {
 
 	@Autowired UserService userService;
@@ -48,8 +48,5 @@ public class UserController {
 		userService.userDel(id);
 	}
 	
-	@GetMapping("/hello")
-	public ResponseEntity<String> hello(){
-		return ResponseEntity.ok("hello");
-	}
+
 }
