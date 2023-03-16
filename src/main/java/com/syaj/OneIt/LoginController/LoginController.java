@@ -48,12 +48,12 @@ public class LoginController {
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		
-		String jwt = tokenProvider.createToken(authentication);
+		TokenVo jwt = tokenProvider.createToken(authentication);
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 		
-		return new ResponseEntity<>(new TokenVo(jwt), httpHeaders,HttpStatus.OK);
+		return new ResponseEntity<>(new TokenVo(jwt.getAccesstoken(),jwt.getRefreshtoken()), httpHeaders,HttpStatus.OK);
 	}
 	
 	@PostMapping("/signup")

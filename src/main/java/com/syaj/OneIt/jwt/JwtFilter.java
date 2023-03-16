@@ -36,6 +36,7 @@ private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
 		HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
 		String jwt = resolveToken(httpServletRequest);
 		String requestURI = httpServletRequest.getRequestURI();
+
 		
 		if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {//토큰 받아서 유효성 검증 통과
 			Authentication authentication = tokenProvider.getAuthentication(jwt);//토큰 유효하면 athentication 객체 받아와서 security context에 set

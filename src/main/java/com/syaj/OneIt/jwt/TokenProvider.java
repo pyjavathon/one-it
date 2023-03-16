@@ -17,6 +17,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import com.syaj.OneIt.LoginVo.TokenVo;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -33,6 +35,8 @@ public class TokenProvider implements InitializingBean {
 	private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
 	private static final String AUTHORITIES_KEY = "auth";
+	
+	private static final long REFRESH_TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000L;
 	
 	private final String secret;
 	
@@ -56,7 +60,7 @@ public class TokenProvider implements InitializingBean {
 	
 	
 	//토큰 생성
-	public String createToken(Authentication authentication) {
+	public TokenVo createToken(Authentication authentication) {
 		String authorities = authentication.getAuthorities().stream()
 										   .map(GrantedAuthority::getAuthority)
 										   .collect(Collectors.joining(","));
@@ -64,13 +68,26 @@ public class TokenProvider implements InitializingBean {
 		long now = (new Date()).getTime();
 		Date validity = new Date(now + this.tokenValidityInMilliseconds);
 		
-		return Jwts.builder()
-				   .setSubject(authentication.getName())
-				   .claim(AUTHORITIES_KEY, authorities)
-				   .signWith(key, SignatureAlgorithm.HS512)
-				   .setExpiration(validity)
-				   .compact();
+		String accesstoken = Jwts.builder()
+				      			 .setSubject(authentication.getName())
+				      			 .claim(AUTHORITIES_KEY, authorities)
+								 .signWith(key, SignatureAlgorithm.HS512)
+								 .setExpiration(validity)
+								 .compact();
+		
+		String refeshtoken = Jwts.builder()
+				   				 .signWith(key, SignatureAlgorithm.HS512)
+				   				 .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
+				   				 .compact();
+		
+		
+		return TokenVo.builder()
+				   	  .accesstoken(accesstoken)
+				   	  .refreshtoken(refeshtoken)
+				   	  .build();
 	}
+
+	
 	//토큰에 담겨있는 정보를 이용해 Authentication 객체를 리턴하는 메소드
 	public Authentication getAuthentication(String token) {
 	      Claims claims = Jwts
@@ -106,4 +123,6 @@ public class TokenProvider implements InitializingBean {
 		}
 		return false;
 	}
+	
+	
 }
