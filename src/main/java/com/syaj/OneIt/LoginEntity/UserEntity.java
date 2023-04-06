@@ -32,7 +32,7 @@ public class UserEntity {
 	
 	@Id
 	@GeneratedValue(
-			strategy = GenerationType.IDENTITY)
+			strategy = GenerationType.AUTO)
 	@Column(name = "user_id")
 	private Long userId;
 	
@@ -49,6 +49,8 @@ public class UserEntity {
 	private String userRole;
 	
 	private String agreement;
+	
+	private String userGender;
 	
 	private boolean activated;
 	

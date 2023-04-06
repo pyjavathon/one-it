@@ -14,4 +14,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
 	@EntityGraph(attributePaths = "authorities")//쿼리가 수행될 때 Lazy 조회가 아니고  Eager 조회로 authorities 정보를 같이 가져옴
 	Optional<UserEntity> findOneWithAuthoritiesByUserEmail(String userEmail);
 
+	Optional<UserEntity> findByUserEmail(String userEmail);
+
 }

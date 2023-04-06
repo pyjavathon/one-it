@@ -15,6 +15,7 @@ import com.syaj.OneIt.jwt.JwtAuthenticationEntryPoint;
 import com.syaj.OneIt.jwt.JwtSecurityConfig;
 import com.syaj.OneIt.jwt.TokenProvider;
 
+import lombok.RequiredArgsConstructor;
 
 
 
@@ -26,7 +27,6 @@ public class SecurityConfig {
 	private final TokenProvider tokenProvider;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-	
 	public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler) {
 		this.tokenProvider = tokenProvider;
 		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
@@ -57,8 +57,8 @@ public class SecurityConfig {
 		.and()
 		.authorizeRequests()//httpServletRequest를 사용하는 요청들에 대한 접근제한을 설정하겠다
 		.antMatchers("/test/hello").permitAll()//이 api에 대한 접근은 인증없이 허용함
-		.antMatchers("/login/authenticate").permitAll()
-		.antMatchers("/login/signup").permitAll()
+		.antMatchers("/user/login").permitAll()
+		.antMatchers("/user/signup").permitAll()
 		.anyRequest().authenticated()
 		
 		.and()

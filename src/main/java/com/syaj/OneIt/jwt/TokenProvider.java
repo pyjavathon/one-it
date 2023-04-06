@@ -17,7 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
-import com.syaj.OneIt.LoginVo.TokenVo;
+import com.syaj.OneIt.LoginVo.UserRequestVo;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -36,7 +36,8 @@ public class TokenProvider implements InitializingBean {
 
 	private static final String AUTHORITIES_KEY = "auth";
 	
-	private static final long REFRESH_TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000L;
+	private static final long REFRESH_TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000L;// 1일
+	private static final long ACCESS_TOKEN_EXPIRE_TIME = 12 * 60 * 60 * 1000L;// 20분
 	
 	private final String secret;
 	
@@ -60,7 +61,7 @@ public class TokenProvider implements InitializingBean {
 	
 	
 	//토큰 생성
-	public TokenVo createToken(Authentication authentication) {
+	public UserRequestVo.Logout createToken(Authentication authentication) {
 		String authorities = authentication.getAuthorities().stream()
 										   .map(GrantedAuthority::getAuthority)
 										   .collect(Collectors.joining(","));
@@ -81,9 +82,11 @@ public class TokenProvider implements InitializingBean {
 				   				 .compact();
 		
 		
-		return TokenVo.builder()
+		return UserRequestVo.Logout.builder()
 				   	  .accesstoken(accesstoken)
+				   	  .accessTokenExpirationTime(ACCESS_TOKEN_EXPIRE_TIME)
 				   	  .refreshtoken(refeshtoken)
+				   	  .refreshTokenExpirationTime(REFRESH_TOKEN_EXPIRE_TIME)
 				   	  .build();
 	}
 
@@ -122,6 +125,13 @@ public class TokenProvider implements InitializingBean {
 			logger.info("JWT 토큰이 잘못되었습니다.");
 		}
 		return false;
+	}
+	
+	//blacklist로 등록
+	public Long getExpiration(String accessToken) {
+		Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().getExpiration();
+		Long now = new Date().getTime();
+		return (expiration.getTime() - now);
 	}
 	
 	
