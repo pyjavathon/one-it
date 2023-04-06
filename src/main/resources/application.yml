@@ -8,14 +8,14 @@ server:
 
 spring: 
   datasource:
-    url: jdbc:mariadb://oneit-mariadb.cqrt0t8e1rsq.ap-northeast-2.rds.amazonaws.com:3306/oneit
-    driver-class-name: org.mariadb.jdbc.Driver
-    #url: jdbc:mysql://localhost:3306/oneit
-    #driver-class-name: com.mysql.cj.jdbc.Driver
+    #url: jdbc:mariadb://oneit-mariadb.cqrt0t8e1rsq.ap-northeast-2.rds.amazonaws.com:3306/oneit
+    #driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/oneit
+    driver-class-name: com.mysql.cj.jdbc.Driver
     #oneit3020
     username: root
-    #password: pansunluv!2ayeon
-    password: oneit3020
+    password: pansunluv!2ayeon
+    #password: oneit3020
   jpa:
     hibernate:
       ddl-auto: update
@@ -24,7 +24,10 @@ spring:
         format_sql: true #To beautify or pretty print the SQL
   redis:
     host: 172.31.42.189
+    #host: localhost
     port: 6379
+    
+    timeout: 3000
 jwt:
   secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
   token-validity-in-seconds: 86400   

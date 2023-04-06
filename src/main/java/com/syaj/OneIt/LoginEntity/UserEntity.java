@@ -32,7 +32,7 @@ public class UserEntity {
 	
 	@Id
 	@GeneratedValue(
-			strategy = GenerationType.AUTO)
+			strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Long userId;
 	

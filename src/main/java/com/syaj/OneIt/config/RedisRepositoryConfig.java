@@ -1,6 +1,5 @@
 package com.syaj.OneIt.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,16 +18,13 @@ import lombok.RequiredArgsConstructor;
 public class RedisRepositoryConfig {
 	
 	private final RedisProperties redisProperties;
-	@Value("${spring.redis.host}")
-	private String host;
+
     // lettuce
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-		redisStandaloneConfiguration.setHostName(host);
-		redisStandaloneConfiguration.setPort(redisProperties.getPort());
-		return new LettuceConnectionFactory(redisStandaloneConfiguration);
+    	return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
     }
+    
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
