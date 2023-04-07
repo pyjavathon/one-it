@@ -23,11 +23,12 @@ spring:
       hibernate:
         format_sql: true #To beautify or pretty print the SQL
   redis:
-    host: 172.31.42.189
+  # host: one-it.q4yqxn.clustercfg.apn2.cache.amazonaws.com
     #host: localhost
     port: 6379
-    
-    timeout: 3000
+    #password : oneit 
+    #timeout: 3000
 jwt:
   secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
-  token-validity-in-seconds: 86400   
+  refresh-token-validity-in-seconds: 1209600 # 14일
+  access-token-validity-in-seconds: 43200 # 12시간

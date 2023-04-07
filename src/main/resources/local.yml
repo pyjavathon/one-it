@@ -22,3 +22,9 @@ spring:
 jwt:
   secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
   token-validity-in-seconds: 86400   
+  
+  
+  
+  #private static final long REFRESH_TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000L;// 1일
+  #private static final long ACCESS_TOKEN_EXPIRE_TIME = 12 * 60 * 60 * 1000L;// 20분
+  

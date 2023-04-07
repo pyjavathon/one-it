@@ -27,7 +27,7 @@ import com.syaj.OneIt.LoginEntity.UserEntity;
 import com.syaj.OneIt.LoginService.UserService;
 import com.syaj.OneIt.LoginVo.UserRequestVo;
 import com.syaj.OneIt.LoginVo.UserRequestVo.Logout;
-import com.syaj.OneIt.jwt.JwtFilter;
+import com.syaj.OneIt.jwt.JwtAuthenticationFilter;
 import com.syaj.OneIt.jwt.TokenProvider;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,14 +38,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/user")
 public class UserController {
 
-	private final TokenProvider tokenProvider;
+	@Autowired
+	private UserService userService;
 
-	private final UserService userService;
+	@Autowired
+	private AuthenticationManagerBuilder authenticationManagerBuilder;
 
-	private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
-	public UserController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService) {
-		this.tokenProvider = tokenProvider;
+	public UserController(AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService) {
 		this.authenticationManagerBuilder = authenticationManagerBuilder;
 		this.userService = userService;
 	}

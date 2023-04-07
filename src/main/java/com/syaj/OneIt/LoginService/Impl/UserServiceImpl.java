@@ -6,13 +6,11 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -35,8 +33,7 @@ import com.syaj.OneIt.LoginRepository.UserRepository;
 import com.syaj.OneIt.LoginService.UserService;
 import com.syaj.OneIt.LoginVo.UserRequestVo;
 import com.syaj.OneIt.LoginVo.UserRequestVo.Login;
-import com.syaj.OneIt.LoginVo.UserRequestVo.Logout;
-import com.syaj.OneIt.jwt.JwtFilter;
+import com.syaj.OneIt.jwt.JwtAuthenticationFilter;
 import com.syaj.OneIt.jwt.TokenProvider;
 import com.syaj.OneIt.util.SecurityUtil;
 
@@ -44,11 +41,13 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService, UserDetailsService {
-
+public class UserServiceImpl implements UserService, UserDetailsService  {
+	
 	private final PasswordEncoder passwordEncoder;
-	private final TokenProvider tokenProvider;
-	private final RedisTemplate redisTemplate;
+	@Autowired
+	private TokenProvider tokenProvider;
+	@Autowired
+	private RedisTemplate redisTemplate;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	
 	@Autowired
@@ -92,25 +91,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	}
 
-	@Override
-	@Transactional
-	public UserDetails loadUserByUsername(final String userEmail) {
-		return userRepo.findOneWithAuthoritiesByUserEmail(userEmail).map(user -> createUser(userEmail, user))
-				.orElseThrow(() -> new UsernameNotFoundException(userEmail + " -> DB에서 찾을 수 없습니다."));
-	}
-
-	private org.springframework.security.core.userdetails.User createUser(String userEmail, UserEntity user) {
-		if (!user.isActivated()) {
-			throw new RuntimeException(userEmail + " -> 활성화되어 있지 않습니다.");
-		}
-
-		List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
-				.map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
-				.collect(Collectors.toList());
-
-		return new org.springframework.security.core.userdetails.User(user.getUserEmail(), user.getUserPwd(),
-				grantedAuthorities);
-	}
+	
 
 	@Override
 	@Transactional
@@ -121,10 +102,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 		AuthorityEntity authority = AuthorityEntity.builder().authorityName("ROLE_USER").build();
 
-		UserEntity user = UserEntity.builder().userName(userVo.getUserName())
-				.userPwd(passwordEncoder.encode(userVo.getUserPwd())).userEmail(userVo.getUserEmail())
-				.userBirth(userVo.getUserBirth()).authorities(Collections.singleton(authority))
-				.userPhone(userVo.getUserPhone()).agreement(userVo.getAgreement()).activated(true).build();
+		UserEntity user = UserEntity.builder()
+									.userName(userVo.getUserName())
+									.userPwd(passwordEncoder.encode(userVo.getUserPwd()))
+									.userEmail(userVo.getUserEmail())
+									.userBirth(userVo.getUserBirth())
+									.authorities(Collections.singleton(authority))
+									.userPhone(userVo.getUserPhone())
+									.agreement(userVo.getAgreement())
+									.activated(true).build();
 
 		return userRepo.save(user);
 
@@ -150,9 +136,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 		Authentication authentication = tokenProvider.getAuthentication(userRequestVo.getAccesstoken());
 
-		if (redisTemplate.opsForValue().get("RefreshToken: " + authentication.getName()) != null)
-			redisTemplate.delete("RefreshToken: " + authentication.getName());
-
+		if (redisTemplate.opsForValue().get("RT: " + authentication.getName()) != null) {
+			redisTemplate.delete("RT: " + authentication.getName());
+		}
 		Long expiration = tokenProvider.getExpiration(userRequestVo.getAccesstoken());
 
 		redisTemplate.opsForValue().set(userRequestVo.getAccesstoken(), "logout", expiration, TimeUnit.MILLISECONDS);
@@ -171,16 +157,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		 authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		
 	    }catch(Exception e) {
-	    	return ResponseEntity.badRequest().body("로그인 실패");
+	    	return ResponseEntity.badRequest().body("로그인 실패 (비밀번호가 일치하지 않습니다.)");
 	    }
 	    
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		
 		try {
 		jwt = tokenProvider.createToken(authentication);
+		
 		ObjectMapper mapper = new ObjectMapper();
+		
         String tokenString = mapper.writeValueAsString(jwt);
-        redisTemplate.opsForValue().set("RefreshToken:" + authentication.getName(), tokenString, jwt.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+        
+        redisTemplate.opsForValue().set("RT: " + authentication.getName(), tokenString, jwt.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+		
 		}catch(Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(e+"로그인 실패(관리자에게 문의)");
@@ -188,8 +178,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+		httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 		return ResponseEntity.ok(jwt);
 	}
+
+	@Override
+	@Transactional
+	public UserDetails loadUserByUsername(final String userEmail) {
+		return userRepo.findOneWithAuthoritiesByUserEmail(userEmail).map(user -> createUser(userEmail, user))
+				.orElseThrow(() -> new UsernameNotFoundException(userEmail + " -> DB에서 찾을 수 없습니다."));
+	}
+
+	private org.springframework.security.core.userdetails.User createUser(String userEmail, UserEntity user) {
+		if (!user.isActivated()) {
+			throw new RuntimeException(userEmail + " -> 활성화되어 있지 않습니다.");
+		}
+
+		List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
+				.map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
+				.collect(Collectors.toList());
+
+		return new org.springframework.security.core.userdetails.User(user.getUserEmail(), user.getUserPwd(),
+				grantedAuthorities);
+	}
+
+
 
 }
