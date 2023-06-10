@@ -1,4 +1,4 @@
-#one-it team project configuration
+##one-it team project configuration
 server:
   port: 8080
   servlet:
@@ -24,7 +24,7 @@ spring:
         format_sql: true #To beautify or pretty print the SQL
   redis:
     #host: 172.31.42.189
-    host: 127.0.0.1
+    host: oneit-redis.q4yqxn.clustercfg.apn2.cache.amazonaws.com
     port: 6379
     #password : oneit 
     timeout: 3000
