@@ -6,16 +6,28 @@ server:
   error:
     include-exception: true #응답에 exception의 내용을 포함할지 여부
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui/index.html
+    groups-order: DESC
+    doc-expansion: none
+    tags-sorter: alpha
+    operationsSorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+    
 spring: 
   datasource:
-    url: jdbc:mariadb://oneit-mariadb.cqrt0t8e1rsq.ap-northeast-2.rds.amazonaws.com:3306/oneit
-    driver-class-name: org.mariadb.jdbc.Driver
-    #url: jdbc:mysql://localhost:3306/oneit
-    #driver-class-name: com.mysql.cj.jdbc.Driver
+    #url: jdbc:mariadb://oneit-mariadb.cqrt0t8e1rsq.ap-northeast-2.rds.amazonaws.com:3306/oneit
+    #driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/oneit
+    driver-class-name: com.mysql.cj.jdbc.Driver
     #oneit3020
     username: root
-    #password: pansunluv!2ayeon
-    password: oneit3020
+    password: pansunluv!2ayeon
+    #password: oneit3020
   jpa:
     hibernate:
       ddl-auto: update
@@ -24,7 +36,7 @@ spring:
         format_sql: true #To beautify or pretty print the SQL
   redis:
     #host: 172.31.42.189
-    host: oneit-redis.q4yqxn.clustercfg.apn2.cache.amazonaws.com
+    #host: oneit-redis.q4yqxn.clustercfg.apn2.cache.amazonaws.com
     port: 6379
     #password : oneit 
     timeout: 3000

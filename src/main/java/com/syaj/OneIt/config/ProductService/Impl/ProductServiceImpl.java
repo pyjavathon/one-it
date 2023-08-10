@@ -2,6 +2,7 @@ package com.syaj.OneIt.config.ProductService.Impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.syaj.OneIt.ProductEntity.Product;
@@ -11,16 +12,17 @@ import com.syaj.OneIt.ProductService.ProductService;
 @Service
 public class ProductServiceImpl implements ProductService{
 
-	
+	@Autowired
 	private ProductRepository repo;
+	
 	
 	public ProductServiceImpl(ProductRepository repo) {
 		this.repo = repo;
 	}
 	
 	@Override
-	public Product addProduct(Product p) {
-		return repo.save(p);
+	public void addProduct(Product p) {
+		 repo.save(p);
 	}
 
 	@Override

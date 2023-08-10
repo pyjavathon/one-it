@@ -52,9 +52,8 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-
 				.csrf().disable().httpBasic().disable().formLogin().disable()
-				.addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+				//.addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
 				.and()
@@ -66,6 +65,11 @@ public class SecurityConfig {
 				.antMatchers("/test/hello").permitAll()// 이 api에 대한 접근은 인증없이 허용함
 				.antMatchers("/user/login").permitAll()
 				.antMatchers("/user/signup").permitAll()
+				.antMatchers("/product/**").permitAll()
+				.antMatchers("/index.html").permitAll()
+				.antMatchers("/swagger-ui/**").permitAll()
+				.antMatchers("/v3/api-docs").permitAll()
+				.antMatchers("/v3/api-docs/**").permitAll()
 				.anyRequest()
 				.authenticated()
 

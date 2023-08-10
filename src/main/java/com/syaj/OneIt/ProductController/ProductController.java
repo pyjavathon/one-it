@@ -2,6 +2,7 @@ package com.syaj.OneIt.ProductController;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductController {
 	
+	@Autowired
 	private ProductService service;
+	
 	
 	public ProductController(ProductService service) {
 		this.service = service;
@@ -29,8 +32,8 @@ public class ProductController {
 	//}
 	
 	@PostMapping("/add")
-	public Product addProduct(Product p) {
-		return service.addProduct(p);
+	public void addProduct(Product p) {
+		 service.addProduct(p);
 	}
 	
 	@GetMapping("/find")

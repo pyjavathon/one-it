@@ -6,7 +6,7 @@ import com.syaj.OneIt.ProductEntity.Product;
 
 public interface ProductService {
 	
-	public Product addProduct(Product p);
+	public void addProduct(Product p);
 
 	public Product findOneProduct(String id);
 

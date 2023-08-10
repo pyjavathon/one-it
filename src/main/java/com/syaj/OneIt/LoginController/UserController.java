@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +50,7 @@ public class UserController {
 		this.userService = userService;
 	}
 
-	@Operation(summary = "user register/modify method")
+	@Operation(summary = "!!!test용입니다. 회원가입은 signup 메소드를 이용해주세요!!!")
 	@PostMapping(value = "/userRegister")
 	public void userRegister(@RequestBody UserEntity user) {
 		userService.userRegister(user);
@@ -88,12 +89,14 @@ public class UserController {
 		return ResponseEntity.ok(userService.signup(userVo));
 	}
 	
+	@Operation(summary = "!!! JWT test용입니다 !!!")
 	@GetMapping("/user")
 	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	public ResponseEntity<?> getMyUserInfo(){
 		return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
 	}
 	
+	@Operation(summary = "!!! JWT test용입니다 !!!")
 	@GetMapping("/user/{username}")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<?> getUserInfo(@PathVariable String username){
