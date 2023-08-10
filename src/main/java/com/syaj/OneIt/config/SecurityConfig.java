@@ -32,6 +32,7 @@ public class SecurityConfig {
 	
 	
 	private final TokenProvider tokenProvider;
+	private final RedisTemplate redisTemplate;
 	
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -74,8 +75,9 @@ public class SecurityConfig {
 				.authenticated()
 
 				.and()
-                .headers()
-                .frameOptions().sameOrigin();
+				.addFilterBefore(new JwtAuthenticationFilter(tokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
+				.headers()
+				.frameOptions().sameOrigin();
 				
 
 		return http.build();

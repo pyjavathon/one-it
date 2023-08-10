@@ -36,9 +36,8 @@ public class UserRequestVo {
 		@NotNull
 		private String refreshtoken;
 		
-		private Long refreshTokenExpirationTime;
-		
 		private Long accessTokenExpirationTime;
+        private Long refreshTokenExpirationTime;
 	}
 
 	@Getter

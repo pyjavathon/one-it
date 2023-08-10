@@ -4,6 +4,7 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,8 +20,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.webjars.NotFoundException;
 
-import com.syaj.OneIt.LoginService.Impl.UserServiceImpl;
+import com.syaj.OneIt.LoginEntity.UserEntity;
+import com.syaj.OneIt.LoginRepository.UserRepository;
 import com.syaj.OneIt.LoginVo.UserRequestVo;
 
 import io.jsonwebtoken.Claims;
@@ -39,7 +43,7 @@ public class TokenProvider implements InitializingBean {
 	private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
 	@Autowired
-	
+	private UserRepository userRepository;
 	private static final String AUTHORITIES_KEY = "auth";
 	
 	private final Long accessTokenValidityInMilliseconds;
@@ -71,12 +75,15 @@ public class TokenProvider implements InitializingBean {
 	
 	//토큰 생성
 	public UserRequestVo.Logout createToken(Authentication authentication) {
+		
+		// 권한 가져오기
 		String authorities = authentication.getAuthorities().stream()
 										   .map(GrantedAuthority::getAuthority)
 										   .collect(Collectors.joining(","));
-		
+
+		 // Access Token 생성
 		long now = (new Date()).getTime();
-		
+
 		String accesstoken = Jwts.builder()
 				      			 .setSubject(authentication.getName())
 				      			 .claim(AUTHORITIES_KEY, authorities)
@@ -84,6 +91,7 @@ public class TokenProvider implements InitializingBean {
 								 .setExpiration(new Date(now +accessTokenValidityInMilliseconds))
 								 .compact();
 		
+		// Refresh Token 생성
 		String refeshtoken = Jwts.builder()
 				   				 .signWith(key, SignatureAlgorithm.HS512)
 				   				 .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
